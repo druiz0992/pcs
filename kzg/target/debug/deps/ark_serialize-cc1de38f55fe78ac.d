@@ -1,0 +1,11 @@
+/home/david/projects/rust/kzg/target/debug/deps/libark_serialize-cc1de38f55fe78ac.rmeta: /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/lib.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/error.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/flags.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/impls.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/../README.md
+
+/home/david/projects/rust/kzg/target/debug/deps/libark_serialize-cc1de38f55fe78ac.rlib: /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/lib.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/error.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/flags.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/impls.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/../README.md
+
+/home/david/projects/rust/kzg/target/debug/deps/ark_serialize-cc1de38f55fe78ac.d: /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/lib.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/error.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/flags.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/impls.rs /home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/../README.md
+
+/home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/lib.rs:
+/home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/error.rs:
+/home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/flags.rs:
+/home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/impls.rs:
+/home/david/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ark-serialize-0.5.0/src/../README.md:

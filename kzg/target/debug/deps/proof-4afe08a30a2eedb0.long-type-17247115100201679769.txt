@@ -1,0 +1,1 @@
+for<'a> fn(&'a GlobalParams<_>, <_ as ark_ec::pairing::Pairing>::G1Affine, <_ as ark_ec::pairing::Pairing>::G1Affine, <_ as ark_ec::pairing::Pairing>::ScalarField, <_ as ark_ec::pairing::Pairing>::ScalarField) -> bool {verify::<_>}
