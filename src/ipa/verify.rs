@@ -27,7 +27,7 @@ pub fn verify<P: CurveGroup + PrimeGroup>(
         let u_inverse = u.inverse().unwrap();
         let (l_group, r_group) = l_r_group[i];
         c += l_group * (u * u) + r_group * (u_inverse * u_inverse);
-        let binomial = compute_monomial(u_values[m - i - 1], 1 << i);
+        let binomial = compute_binomial(u_values[m - i - 1], 1 << i);
         g = g * binomial;
     }
 
@@ -40,7 +40,7 @@ pub fn verify<P: CurveGroup + PrimeGroup>(
     (g_0_group + *u_group * b_0_field) * a_0 == c
 }
 
-fn compute_monomial<F: Field>(coeff: F, degree: usize) -> Polynomial<F> {
+fn compute_binomial<F: Field>(coeff: F, degree: usize) -> Polynomial<F> {
     let mut poly_coeffs = vec![F::zero(); degree + 1];
     poly_coeffs[0] = coeff.inverse().unwrap();
     poly_coeffs[degree] = coeff;

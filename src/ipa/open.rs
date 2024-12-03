@@ -13,11 +13,14 @@ pub fn evaluation_proof<P: CurveGroup + PrimeGroup>(
     x_value: &P::ScalarField,
 ) -> Result<
     (
-        P::ScalarField,
-        Vec<(P, P)>,
-        P::ScalarField,
-        Vec<P::ScalarField>,
-        P,
+        P::ScalarField, // a[0]
+        Vec<(P, P)>,    // L,R vectors
+        P::ScalarField, // evaluation f(x)
+        // Below parameters are not necessary in the
+        // final protocol as they will be computed by prover and verifier
+        // using fiat shamir transform to make protocol non inteactive
+        Vec<P::ScalarField>, // u challenges
+        P,                   // U group element
     ),
     String,
 > {
