@@ -1,19 +1,19 @@
 use ark_bn254::{Bn254, Fr};
 use ark_std::UniformRand;
 
-use common::{polynomial::Polynomial, utils};
-use kzg::{commit::commit, evaluation::evaluation_proof, setup::GlobalParams, verify::verify};
+use pcs::common::{polynomial::Polynomial, utils};
+use pcs::kzg::{commit::commit, open::evaluation_proof, setup::GlobalKzgParams, verify::verify};
 use rand::thread_rng;
 
 /// proof that q(X) = f(X)/z(X). where Z is a the vanishing polynomial of omega
 #[test]
-fn test_zero_test_on_omega() {
+fn test_kzg_zero_test_on_omega() {
     let mut rng = thread_rng();
     let order = 16;
     let q_degree = 100;
     let omega = utils::compute_roots_of_unity::<Fr>(order).unwrap();
     let vanishing_poly = Polynomial::from_monomial_coefficients(omega);
-    let global_params = GlobalParams::<Bn254>::new(2 * q_degree);
+    let global_params = GlobalKzgParams::<Bn254>::new(2 * q_degree);
 
     let q_poly = Polynomial::from_random_coefficients(q_degree);
     let polynomial = q_poly.clone() * vanishing_poly.clone();

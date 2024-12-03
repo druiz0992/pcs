@@ -1,7 +1,16 @@
-[workspace]
-members = ["kzg", "ipa", "common"]
-resolver = "2"
+[package]
+name = "pcs"
+version = "0.1.0"
+edition = "2021"
 
+[lib]
+path = "src/lib.rs"
 
-[profile.dev]
-opt-level = 3
+[dependencies]
+ark-bn254 = "0.5.0"
+ark-ec = "0.5.0"
+ark-ff = "0.5.0"
+ark-poly = "0.5.0"
+ark-std = "0.5.0"
+rand = "0.8.5"
+

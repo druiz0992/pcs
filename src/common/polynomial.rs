@@ -87,6 +87,20 @@ impl<F: Field> Polynomial<F> {
             None
         }
     }
+
+    pub fn inner_product(&self, other: &Polynomial<F>) -> Result<F, String> {
+        if self.degree() != other.degree() {
+            return Err("Polynomials don't have same degree".to_string());
+        }
+
+        let inner_product = self
+            .coeffs()
+            .iter()
+            .zip(other.coeffs().iter())
+            .map(|(a, b)| *a * *b)
+            .sum::<F>();
+        Ok(inner_product)
+    }
 }
 
 impl<F: FftField> Polynomial<F> {

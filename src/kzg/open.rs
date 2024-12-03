@@ -3,14 +3,14 @@ use ark_std::One;
 use ark_std::Zero;
 
 use super::commit::commit;
-use crate::setup::GlobalParams;
-use common::polynomial::Polynomial;
+use super::setup::GlobalKzgParams;
+use crate::common::polynomial::Polynomial;
 
 /// we want to show that f(u) = v => u is a root of f(x) - v => (X - u) divides f(x) - v => There exists
 /// a polynomial q in Fp such that q(x) (x - u) = f(x) - f(u). The evaluation proof process consits on finding q(x) and
 /// commitment Cq = q(s) * G
 pub fn evaluation_proof<P: Pairing>(
-    global_params: &GlobalParams<P>,
+    global_params: &GlobalKzgParams<P>,
     polynomial: &Polynomial<P::ScalarField>,
     u: &P::ScalarField,
 ) -> Result<(P::G1Affine, P::ScalarField), String> {
@@ -40,7 +40,7 @@ pub fn evaluation_proof<P: Pairing>(
 }
 
 pub fn batch_evaluation_proof<P: Pairing>(
-    global_params: &GlobalParams<P>,
+    global_params: &GlobalKzgParams<P>,
     polynomial: &Polynomial<P::ScalarField>,
     u: &[P::ScalarField],
 ) -> Result<(P::G1Affine, Polynomial<P::ScalarField>), String> {
