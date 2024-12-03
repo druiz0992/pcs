@@ -1,16 +1,16 @@
 use ark_ec::{pairing::Pairing, AffineRepr};
 
-use crate::{
+use super::{
     commit::{commit, commit_g2},
-    setup::GlobalParams,
+    setup::GlobalKzgParams,
 };
-use common::polynomial::Polynomial;
+use crate::common::polynomial::Polynomial;
 
 /// The verifier has trusted setup params [s_i * G], commitment to polynomial f C_f, u and v (such that f(u) = v)
 /// and the commitment to polynomial q C_q as the proof.
 /// Verifier accepts proof if (s - u)C_q = C_f - v * G <=>  (x-u) * q(x) = f(x) - v  (prover side)
 pub fn verify<P: Pairing>(
-    global_params: &GlobalParams<P>,
+    global_params: &GlobalKzgParams<P>,
     commitment_f: &P::G1Affine,
     proof: &P::G1Affine,
     u: &P::ScalarField,
@@ -36,7 +36,7 @@ pub fn verify<P: Pairing>(
 }
 
 pub fn batch_verify<P: Pairing>(
-    global_params: &GlobalParams<P>,
+    global_params: &GlobalKzgParams<P>,
     commitment_f: &P::G1Affine,
     proof: &P::G1Affine,
     u: &[P::ScalarField],

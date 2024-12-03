@@ -1,17 +1,15 @@
-use ark_bn254::{Fr, G1Projective};
 use ark_ec::AffineRepr;
-use ark_ec::{pairing::Pairing, CurveGroup, PrimeGroup};
-use ark_ff::Field;
+use ark_ec::{pairing::Pairing, CurveGroup};
 use ark_std::{One, UniformRand};
 use rand::thread_rng;
 
 #[derive(Debug, PartialEq)]
-pub struct GlobalParams<P: Pairing> {
+pub struct GlobalKzgParams<P: Pairing> {
     pub powers_of_g1: Vec<P::G1Affine>,
     pub powers_of_g2: Vec<P::G2Affine>,
 }
 
-impl<P: Pairing> GlobalParams<P> {
+impl<P: Pairing> GlobalKzgParams<P> {
     pub fn new(max_degree: usize) -> Self {
         kzg_setup(max_degree)
     }
@@ -43,7 +41,7 @@ impl<P: Pairing> GlobalParams<P> {
     }
 }
 
-fn kzg_setup<P: Pairing>(max_degree: usize) -> GlobalParams<P> {
+fn kzg_setup<P: Pairing>(max_degree: usize) -> GlobalKzgParams<P> {
     let mut rng = thread_rng();
 
     let s = P::ScalarField::rand(&mut rng);
@@ -60,43 +58,24 @@ fn kzg_setup<P: Pairing>(max_degree: usize) -> GlobalParams<P> {
         current_power *= s;
     }
 
-    GlobalParams {
+    GlobalKzgParams {
         powers_of_g1,
         powers_of_g2,
     }
 }
 
-pub fn kzg_lagrange_setup(max_degree: usize) -> Vec<G1Projective> {
-    let g1_generator = G1Projective::generator();
-
-    let mut denominators = vec![Fr::one(); max_degree + 1];
-    for i in 0..=max_degree {
-        let xi = Fr::from((i + 1) as u64); // Compute xi as Fr
-        for j in 0..=max_degree {
-            if i != j {
-                let xj = Fr::from((j + 1) as u64); // Compute xj as Fr
-                denominators[i] *= xi - xj; // Accumulate denominator product
-            }
-        }
-    }
-    let denominators_inverses: Vec<Fr> =
-        denominators.iter().map(|d| d.inverse().unwrap()).collect();
-
-    (0..=max_degree)
-        .map(|i| g1_generator * denominators_inverses[i])
-        .collect()
-}
-
 #[cfg(test)]
 mod test {
+    use ark_bn254::G1Projective;
     use ark_bn254::{Bn254, G2Projective};
+    use ark_ec::PrimeGroup;
 
     use super::*;
 
     #[test]
     fn test_kzg_setup_length() {
         let degree = 10;
-        let global_params = GlobalParams::<Bn254>::new(degree);
+        let global_params = GlobalKzgParams::<Bn254>::new(degree);
 
         assert_eq!(global_params.len(), degree + 1);
     }
@@ -104,7 +83,7 @@ mod test {
     #[test]
     fn test_kzg_setup_first_g1_element() {
         let degree = 10;
-        let global_params = GlobalParams::<Bn254>::new(degree);
+        let global_params = GlobalKzgParams::<Bn254>::new(degree);
         let g1_generator = G1Projective::generator();
 
         assert_eq!(global_params.g1_iter().next().unwrap(), &g1_generator);
@@ -113,7 +92,7 @@ mod test {
     #[test]
     fn test_kzg_setup_first_g2_element() {
         let degree = 10;
-        let global_params = GlobalParams::<Bn254>::new(degree);
+        let global_params = GlobalKzgParams::<Bn254>::new(degree);
         let g2_generator = G2Projective::generator();
 
         assert_eq!(global_params.g2_iter().next().unwrap(), &g2_generator);
@@ -121,7 +100,7 @@ mod test {
     #[test]
     fn test_kzg_setup_distinctness() {
         let max_degree = 10;
-        let global_params = GlobalParams::<Bn254>::new(max_degree);
+        let global_params = GlobalKzgParams::<Bn254>::new(max_degree);
 
         for i in 0..global_params.len() {
             for j in i + 1..global_params.len() {
@@ -134,13 +113,5 @@ mod test {
                 );
             }
         }
-    }
-
-    #[test]
-    fn test_kzg_lagrange_setup_length() {
-        let degree = 10;
-        let lagrange_points = kzg_lagrange_setup(degree);
-
-        assert_eq!(lagrange_points.len(), degree + 1);
     }
 }
