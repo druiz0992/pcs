@@ -1,5 +1,5 @@
 use ark_ec::AffineRepr;
-use ark_ec::{CurveGroup, PrimeGroup};
+use ark_ec::CurveGroup;
 use ark_std::UniformRand;
 use rand::thread_rng;
 

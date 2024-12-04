@@ -2,6 +2,7 @@ use super::utils;
 use ark_ec::{CurveGroup, PrimeGroup};
 use ark_ff::Field;
 use ark_ff::UniformRand;
+use ark_ff::Zero;
 use rand::thread_rng;
 
 use super::setup::GlobalIpaParams;
@@ -62,6 +63,47 @@ pub fn evaluation_proof<P: CurveGroup + PrimeGroup>(
     Ok((coeffs_a[0], l_r_group, f_x, u_values, u_group))
 }
 
+pub fn batch_evaluation_proof<P: CurveGroup + PrimeGroup>(
+    global_params: &GlobalIpaParams<P>,
+    polynomials: &[Polynomial<P::ScalarField>],
+    q_poly: &Polynomial<P::ScalarField>,
+    z_poly: &Polynomial<P::ScalarField>, // z(x) = Product (X-omega), for all omegas in Big Omega
+    z_i_poly: &[Polynomial<P::ScalarField>], // z_i(x) = Product (X - omega) for omega_i in Big Omerga - Big Omega i
+    rho: &[P::ScalarField],
+    x_value: &P::ScalarField,
+) -> Result<
+    (
+        P::ScalarField, // a[0]
+        Vec<(P, P)>,    // L,R vectors
+        // Below parameters are not necessary in the
+        // final protocol as they will be computed by prover and verifier
+        // using fiat shamir transform to make protocol non inteactive
+        Vec<P::ScalarField>, // u challenges
+        P,                   // U group element
+    ),
+    String,
+> {
+    let z_evaluation = z_poly.evaluate(x_value);
+    let zi_evaluations: Vec<P::ScalarField> =
+        z_i_poly.iter().map(|p| p.evaluate(x_value)).collect();
+    let scaled_zi_evaluations: Vec<P::ScalarField> = zi_evaluations
+        .iter()
+        .enumerate()
+        .map(|(idx, v)| *v * rho[idx])
+        .collect();
+
+    let g_poly = compute_g_poly(&polynomials, &q_poly, &z_evaluation, &scaled_zi_evaluations);
+
+    let (a_m, l_r_group, f_x, u_values, u_group_element) =
+        evaluation_proof(&global_params, &g_poly, x_value)?;
+
+    if f_x != P::ScalarField::zero() {
+        return Err("g_poly should evaluate to zero at point x".to_string());
+    }
+
+    Ok((a_m, l_r_group, u_values, u_group_element))
+}
+
 fn compute_u_field_values<P: CurveGroup>(n: usize) -> Vec<P::ScalarField> {
     let mut rng = thread_rng();
     let mut u = Vec::with_capacity(n);
@@ -69,4 +111,29 @@ fn compute_u_field_values<P: CurveGroup>(n: usize) -> Vec<P::ScalarField> {
         u.push(P::ScalarField::rand(&mut rng));
     }
     u
+}
+
+fn compute_g_poly<F: Field>(
+    polynomials: &[Polynomial<F>],
+    q_poly: &Polynomial<F>,
+    z_evaluation: &F,
+    scaled_zi_evaluations: &[F],
+) -> Polynomial<F> {
+    let scaled_q_poly = Polynomial::<F>::from_vector_coefficients(
+        q_poly.coeffs().iter().map(|q| *q * z_evaluation).collect(),
+    );
+    let mut scaled_f_polys = Polynomial::<F>::from_vector_coefficients(vec![]);
+    scaled_f_polys = polynomials
+        .iter()
+        .enumerate()
+        .fold(scaled_f_polys, |acc, (idx, p)| {
+            let poly_coeffs: Vec<F> = p
+                .coeffs()
+                .iter()
+                .map(|p| *p * scaled_zi_evaluations[idx])
+                .collect();
+            let poly = Polynomial::<F>::from_vector_coefficients(poly_coeffs);
+            poly + acc
+        });
+    scaled_f_polys - scaled_q_poly
 }
