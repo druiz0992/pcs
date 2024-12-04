@@ -5,6 +5,7 @@ use super::utils;
 use ark_ec::{CurveGroup, PrimeGroup};
 use ark_ff::Field;
 use ark_ff::One;
+use ark_ff::Zero;
 
 pub fn verify<P: CurveGroup + PrimeGroup>(
     global_params: &GlobalIpaParams<P>,
@@ -38,6 +39,51 @@ pub fn verify<P: CurveGroup + PrimeGroup>(
     let g_0_group = utils::inner_product_group(&s, &global_params.g, g.degree() + 1);
 
     (g_0_group + *u_group * b_0_field) * a_0 == c
+}
+
+pub fn batch_verify<P: CurveGroup + PrimeGroup>(
+    global_params: &GlobalIpaParams<P>,
+    commitments_f: &[P],
+    commitment_q: &P,
+    z_poly: &Polynomial<P::ScalarField>, // z(x) = Product (X-omega), for all omegas in Big Omega
+    z_i_poly: &[Polynomial<P::ScalarField>], // z_i(x) = Product (X - omega) for omega_i in Big Omerga - Big Omega i
+    x_value: &P::ScalarField,
+    l_r_group: &[(P, P)],
+    a_0: &P::ScalarField,
+    u_values: &[P::ScalarField],
+    rho: &[P::ScalarField],
+    u_group: &P,
+) -> bool {
+    let z_evaluation = z_poly.evaluate(x_value);
+    let zi_evaluations: Vec<P::ScalarField> =
+        z_i_poly.iter().map(|p| p.evaluate(x_value)).collect();
+    let scaled_zi_evaluations: Vec<P::ScalarField> = zi_evaluations
+        .iter()
+        .enumerate()
+        .map(|(idx, v)| *v * rho[idx])
+        .collect();
+
+    let mut commitment_linear_combination = P::zero();
+    commitment_linear_combination = commitments_f
+        .iter()
+        .enumerate()
+        .fold(commitment_linear_combination, |acc, (idx, c)| {
+            *c * scaled_zi_evaluations[idx] + acc
+        });
+    let commitment_g = commitment_linear_combination - *commitment_q * z_evaluation;
+
+    let f_x = P::ScalarField::zero();
+
+    verify(
+        global_params,
+        &commitment_g,
+        &f_x,
+        x_value,
+        l_r_group,
+        a_0,
+        u_values,
+        u_group,
+    )
 }
 
 fn compute_binomial<F: Field>(coeff: F, degree: usize) -> Polynomial<F> {
