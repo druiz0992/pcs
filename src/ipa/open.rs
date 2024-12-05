@@ -15,6 +15,7 @@ pub fn evaluation_proof<P: CurveGroup + PrimeGroup>(
 ) -> Result<
     (
         P::ScalarField, // a[0]
+        P,              // G[0] -> needed for accumulator
         Vec<(P, P)>,    // L,R vectors
         P::ScalarField, // evaluation f(x)
         // Below parameters are not necessary in the
@@ -60,7 +61,14 @@ pub fn evaluation_proof<P: CurveGroup + PrimeGroup>(
         }
         n /= 2;
     }
-    Ok((coeffs_a[0], l_r_group, f_x, u_values, u_group))
+    Ok((
+        coeffs_a[0],
+        g_group_elements[0],
+        l_r_group,
+        f_x,
+        u_values,
+        u_group,
+    ))
 }
 
 pub fn batch_evaluation_proof<P: CurveGroup + PrimeGroup>(
@@ -74,6 +82,7 @@ pub fn batch_evaluation_proof<P: CurveGroup + PrimeGroup>(
 ) -> Result<
     (
         P::ScalarField, // a[0]
+        P,              // G[0]
         Vec<(P, P)>,    // L,R vectors
         // Below parameters are not necessary in the
         // final protocol as they will be computed by prover and verifier
@@ -94,14 +103,14 @@ pub fn batch_evaluation_proof<P: CurveGroup + PrimeGroup>(
 
     let g_poly = compute_g_poly(&polynomials, &q_poly, &z_evaluation, &scaled_zi_evaluations);
 
-    let (a_m, l_r_group, f_x, u_values, u_group_element) =
+    let (a_m, g_m, l_r_group, f_x, u_values, u_group_element) =
         evaluation_proof(&global_params, &g_poly, x_value)?;
 
     if f_x != P::ScalarField::zero() {
         return Err("g_poly should evaluate to zero at point x".to_string());
     }
 
-    Ok((a_m, l_r_group, u_values, u_group_element))
+    Ok((a_m, g_m, l_r_group, u_values, u_group_element))
 }
 
 fn compute_u_field_values<P: CurveGroup>(n: usize) -> Vec<P::ScalarField> {
