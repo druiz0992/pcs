@@ -104,7 +104,7 @@ fn test_ipa_batch_proof() {
 }
 
 #[test]
-fn test_ipa_split_ivc() {
+fn test_ipa_atomic_ivc() {
     let mut rng = thread_rng();
     let n_polys = 200;
     let n_omegas = 20;
@@ -112,7 +112,7 @@ fn test_ipa_split_ivc() {
     let n_iterations = 1;
 
     let global_params = GlobalIpaParams::<G1Projective>::new(4 * degree);
-    let mut proofs: Vec<SplitIvcIpaAccumulatorInput> = Vec::with_capacity(n_iterations);
+    let mut proofs: Vec<AtomicIvcIpaAccumulatorInput> = Vec::with_capacity(n_iterations);
 
     let mut batched_polys_data = generate_polynomials(n_polys, degree, n_omegas);
 
@@ -142,7 +142,7 @@ fn test_ipa_split_ivc() {
     )
     .expect("Error evaluatiing batch polynomial proof");
 
-    let proof = SplitIvcIpaAccumulatorInput {
+    let proof = AtomicIvcIpaAccumulatorInput {
         batched_polys_data: Some(batched_polys_data),
         commitment: q_commit,
         x_value,
@@ -162,7 +162,7 @@ fn test_ipa_split_ivc() {
     // Accumulator phase
 
     let zero = Fr::zero();
-    let mut accumulator_inputs: [Option<SplitIvcIpaAccumulatorInput>; 2] = [None, None];
+    let mut accumulator_inputs: [Option<AtomicIvcIpaAccumulatorInput>; 2] = [None, None];
     for i in 0..=n_iterations {
         accumulator_inputs[0] = proofs.get(i).cloned();
         let alpha = Fr::rand(&mut rng);
@@ -218,7 +218,7 @@ fn test_ipa_split_ivc() {
         let (acc_a_m, acc_g_m, acc_l_r_group, _f_x, acc_u_values, acc_u_group_element) =
             evaluation_proof(&global_params, &poly_s, &acc_x_value)
                 .expect("Error evaluatiing polynomial proof");
-        let new_accumulation = SplitIvcIpaAccumulatorInput {
+        let new_accumulation = AtomicIvcIpaAccumulatorInput {
             batched_polys_data: None,
             commitment: acc_commitment,
             x_value: acc_x_value,

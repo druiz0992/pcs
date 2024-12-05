@@ -9,7 +9,7 @@ use pcs::common::polynomial::Polynomial;
 use rand::thread_rng;
 
 #[derive(Debug, Clone)]
-pub(crate) struct SplitIvcIpaAccumulatorInput {
+pub(crate) struct AtomicIvcIpaAccumulatorInput {
     pub batched_polys_data: Option<BatchedPolynomialData>,
     pub commitment: G1Projective,
     pub x_value: Fr,

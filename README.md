@@ -1,6 +1,6 @@
 # PCS
 
-A self guided study of KZG and IPA Polynomial Commitment Schemes. Includes examples of batched polynomial evaluation, batched polynomial verification and some IVC schemes.
+A self guided study of KZG and IPA Polynomial Commitment Schemes. Includes examples of batched polynomial evaluation, batched polynomial verification and some atomic IVC accumulation.
 
 
 # References
